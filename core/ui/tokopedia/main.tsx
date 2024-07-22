@@ -4,44 +4,86 @@ import { useDialog } from "../dialog-context";
 import Dialog from "../dialog";
 import ConfigForm from "../form";
 import { tokopediaResponse } from "~core/helper/response-mapper";
-export const Main = ({ fetchData, config }: { fetchData: any, config: any[] }) => {
-    const [storeInfoConfig, storeProductConfig] = config
+import type { FetchData, TokopediaProductDetailOptions, TokopediaShopProductsOptions } from "~core/interfaces/tokopedia.interface";
+import { tokopediaProductDetail } from "~core/utils/tokopedia";
+export const Main = ({ fetchData, config }: { fetchData:any, config: any[] }) => {
+    const [storeInfoConfig, storeProductConfig, productDetailConfig] = config
     const [isOpen, setIsOpen] = useState(false)
     const [shopInfo, setShopInfo] = useState(null)
     const [shopProducts, setShopProducts] = useState([])
+    const [shopName, setShopName] = useState('')
+    const [productDetails,setProductDetails] = useState([])
     const fetchShopInfo = async (shopName: string) => {
-        return await fetchData({ store: setShopInfo, options: { shopName }, payload: storeInfoConfig, mapper: tokopediaResponse.shopInfoMapper })
+        const result =  await fetchData({  options: { shopName }, payload: storeInfoConfig, mapper: tokopediaResponse.shopInfoMapper, append: false }) as FetchData
+        setShopInfo(result)
+        return result
     }
     useEffect(() => {
         const shopName = window.location.pathname.split('/')[1]
         if (shopName) {
+            setShopName(shopName)
             fetchShopInfo(shopName)
         }
     }, [fetchData])
-
+    
     const generateProductList = async ({
         offset,
         sort,
         pageFrom,
         pageTo
-    }) => {
+    }):Promise<any> => {
         const sequences = Array.from({ length: pageTo - pageFrom }, (_, i) => i + 1);
+        let dumpResponse =[] 
         for (let sequence of sequences) {
-            await fetchData({
-                store: setShopProducts, 
+         const result:any[] = await fetchData({
                 options: {
                     shopId: shopInfo[0].basicInfo.shopID,
                     offset,
                     sort,
                     page:sequence
-                }, 
+                } as TokopediaShopProductsOptions, 
                 payload: storeProductConfig, 
-                mapper: tokopediaResponse.productListMapper
-            }, true)
-        }
+                mapper: tokopediaResponse.productListMapper,
+                append: true,
+            })
+         dumpResponse = [...dumpResponse, ...result]
+
+     }
+     setShopProducts(dumpResponse)
+     return dumpResponse
     }
 
+    const generateProductDetails = async () => {
+        let dumpResponse =[] 
+        for (let [index, shopProduct] of shopProducts.entries() ){
+            const path = (new URL(shopProduct.product_url)).pathname
+            const productKey = path.substring(path.lastIndexOf('/')+1, path.length)
+            const options: TokopediaProductDetailOptions = {
+                shopDomain: shopName,
+                productKey:productKey,
+                apiVersion: 1
+            }
+            if(tokopediaResponse.productDetailResponse){
+            const result = await fetchData({
+                options: options,
+                payload: productDetailConfig, 
+                append: true,
+                mapper:tokopediaResponse.productDetailResponse
+            })
+            dumpResponse = [...dumpResponse , result]
+        }
+
+
+        }
+        setProductDetails(dumpResponse)
+        return dumpResponse
+    }
     const { openDialog } = useDialog()
+
+    useEffect(() => {
+        generateProductDetails()
+    }
+    ,[shopProducts])
 
     return (
 
@@ -69,13 +111,13 @@ export const Main = ({ fetchData, config }: { fetchData: any, config: any[] }) =
                             </button>
                         </div>
 
-                        <ConfigForm submitHandler={generateProductList}/>
+                        <ConfigForm submitHandler={generateProductList} />
 
 
                     </div>
                 </div>
             )}
-            <Dialog items={shopProducts} />
+            <Dialog items={productDetails} />
         </div>
     );
 };
