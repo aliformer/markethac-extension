@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import csv from "data-base64:~assets/csv-icon.svg"
+import table from "data-base64:~assets/table.svg"
 import { useDialog } from "../dialog-context";
 import Dialog from "../dialog";
 import ConfigForm from "../form";
@@ -12,6 +12,7 @@ export const Main = ({ fetchData, config }: { fetchData:any, config: any[] }) =>
     const [shopInfo, setShopInfo] = useState(null)
     const [shopProducts, setShopProducts] = useState([])
     const [shopName, setShopName] = useState('')
+    const [isDone, setIsDone] = useState(false) 
     const [productDetails,setProductDetails] = useState([])
     const fetchShopInfo = async (shopName: string) => {
         const result =  await fetchData({  options: { shopName }, payload: storeInfoConfig, mapper: tokopediaResponse.shopInfoMapper, append: false }) as FetchData
@@ -82,6 +83,7 @@ export const Main = ({ fetchData, config }: { fetchData:any, config: any[] }) =>
 
     useEffect(() => {
         generateProductDetails()
+        setIsDone(true)
     }
     ,[shopProducts])
 
@@ -106,18 +108,17 @@ export const Main = ({ fetchData, config }: { fetchData:any, config: any[] }) =>
                             {shopInfo.length &&
                                 <p className="font-mono font-semibold">Shop ID: {shopInfo[0].basicInfo.shopID}</p>
                             }
-                            <button className="bg-none" onClick={openDialog}>
-                                <img src={csv} width={24} height={24} alt="icon-svg" />
-                            </button>
+                            {isDone ? <button className="bg-none" onClick={openDialog}>
+                                <img src={table} width={24} height={24} alt="icon-table" />
+                            </button> : <>
+                            </>}
                         </div>
 
-                        <ConfigForm submitHandler={generateProductList} />
-
-
+                        <ConfigForm submitHandler={generateProductList} finished={productDetails.length}/>
                     </div>
                 </div>
             )}
-            <Dialog items={productDetails} />
+            <Dialog items={productDetails} channel="tokopedia" />
         </div>
     );
 };

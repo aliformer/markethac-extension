@@ -19,7 +19,7 @@ export const getStyle = () => {
 export const getShadowHostId = () => "blibli-inline"
 
 export const getInlineAnchor: PlasmoGetInlineAnchor = async () =>{
-  const selector = document.querySelector(`a[href="/cart"]`)
+  const selector = document.querySelector('#blibliApp > div > header > div.header__btm > div.header__btm__right > div.menus > div.cart.tooltip__trigger.menus__item')
   return selector
 }
 const OverlayBlibli= () => {
