@@ -1,7 +1,7 @@
-import type { FetchData, TokopediaProductDetailOptions, TokopediaShopOptions, TokopediaShopProductsOptions } from "~core/interfaces/tokopedia.interface"
+import type {FetchDataProduct as FetchData, TokopediaProductDetailOptions, TokopediaShopOptions, TokopediaShopProductsOptions } from "~core/interfaces/tokopedia.interface"
 
 
-export const fetchData = async ({options, payload, mapper, append }: FetchData): Promise<any> => {
+export const fetchDataProducts = async ({options, payload, mapper, append }: FetchData): Promise<any> => {
     try{
         function getCookieValue(name) {
         const regex = new RegExp(`(^| )${name}=([^;]+)`)
@@ -76,7 +76,6 @@ export const tokopediaShopProductPayload = (options: TokopediaShopProductsOption
     }
 ]);
 
-
 export const tokopediaProductDetail = (options: TokopediaProductDetailOptions) => {
     return JSON.stringify([{
 
@@ -86,7 +85,215 @@ export const tokopediaProductDetail = (options: TokopediaProductDetailOptions) =
             "productKey": options.productKey,
             "apiVersion": options.apiVersion || 1
         },
-        "query": "fragment ProductVariant on pdpDataProductVariant {\r\n  errorCode\r\n  parentID\r\n  defaultChild\r\n  sizeChart\r\n  totalStockFmt\r\n  variants {\r\n    productVariantID\r\n    variantID\r\n    name\r\n    identifier\r\n    option {\r\n      picture {\r\n        urlOriginal: url\r\n        urlThumbnail: url100\r\n        __typename\r\n      }\r\n      productVariantOptionID\r\n      variantUnitValueID\r\n      value\r\n      hex\r\n      stock\r\n      __typename\r\n    }\r\n    __typename\r\n  }\r\n  children {\r\n    productID\r\n    price\r\n    priceFmt\r\n    optionID\r\n    optionName\r\n    productName\r\n    productURL\r\n    picture {\r\n      urlOriginal: url\r\n      urlThumbnail: url100\r\n      __typename\r\n    }\r\n    stock {\r\n      stock\r\n      isBuyable\r\n      stockWordingHTML\r\n      minimumOrder\r\n      maximumOrder\r\n      __typename\r\n    }\r\n    isCOD\r\n    isWishlist\r\n    campaignInfo {\r\n      campaignID\r\n      campaignType\r\n      campaignTypeName\r\n      campaignIdentifier\r\n      background\r\n      discountPercentage\r\n      originalPrice\r\n      discountPrice\r\n      stock\r\n      stockSoldPercentage\r\n      startDate\r\n      endDate\r\n      endDateUnix\r\n      appLinks\r\n      isAppsOnly\r\n      isActive\r\n      hideGimmick\r\n      isCheckImei\r\n      minOrder\r\n      __typename\r\n    }\r\n    thematicCampaign {\r\n      additionalInfo\r\n      background\r\n      campaignName\r\n      icon\r\n      __typename\r\n    }\r\n    __typename\r\n  }\r\n  __typename\r\n}\r\n\r\n\r\nquery PDPGetLayoutQuery($shopDomain: String, $productKey: String, $layoutID: String, $apiVersion: Float, $userLocation: pdpUserLocation, $extParam: String, $tokonow: pdpTokoNow) {\r\n  pdpGetLayout(shopDomain: $shopDomain, productKey: $productKey, layoutID: $layoutID, apiVersion: $apiVersion, userLocation: $userLocation, extParam: $extParam, tokonow: $tokonow) {\r\n    requestID\r\n    name\r\n    pdpSession\r\n    basicInfo {\r\n      alias\r\n      createdAt\r\n      isQA\r\n      id: productID\r\n      shopID\r\n      shopName\r\n      minOrder\r\n      maxOrder\r\n      weight\r\n      weightUnit\r\n      condition\r\n      status\r\n      url\r\n      needPrescription\r\n      catalogID\r\n      isLeasing\r\n      isBlacklisted\r\n      isTokoNow\r\n      menu {\r\n        id\r\n        name\r\n        url\r\n        __typename\r\n      }\r\n      category {\r\n        id\r\n        name\r\n        title\r\n        breadcrumbURL\r\n        isAdult\r\n        isKyc\r\n        minAge\r\n        detail {\r\n          id\r\n          name\r\n          breadcrumbURL\r\n          isAdult\r\n          __typename\r\n        }\r\n        __typename\r\n      }\r\n      txStats {\r\n        transactionSuccess\r\n        transactionReject\r\n        countSold\r\n        paymentVerified\r\n        itemSoldFmt\r\n        __typename\r\n      }\r\n      stats {\r\n        countView\r\n        countReview\r\n        countTalk\r\n        rating\r\n        __typename\r\n      }\r\n      __typename\r\n    }\r\n    components {\r\n      name\r\n      type\r\n      position\r\n      data {\r\n        ...ProductVariant\r\n        __typename\r\n      }\r\n      __typename\r\n    }\r\n    __typename\r\n  }\r\n}"
+        "query":`fragment ProductVariant on pdpDataProductVariant {
+  errorCode
+  parentID
+  defaultChild
+  sizeChart
+  variants {
+    productVariantID
+    variantID
+    name
+    identifier
+    option {
+      picture {
+        urlOriginal: url
+        urlThumbnail: url100
+      }
+      productVariantOptionID
+      variantUnitValueID
+      value
+      hex
+    }
+  }
+  children {
+    productID
+    price
+    priceFmt
+    optionID
+    productName
+    productURL
+    picture {
+      urlOriginal: url
+      urlThumbnail: url100
+    }
+    stock {
+      stock
+      isBuyable
+      stockWording
+      stockWordingHTML
+      minimumOrder
+      maximumOrder
+    }
+    isCOD
+    isWishlist
+    campaignInfo {
+      campaignID
+      campaignType
+      campaignTypeName
+      campaignIdentifier
+      background
+      discountPercentage
+      originalPrice
+      discountPrice
+      stock
+      stockSoldPercentage
+      threshold
+      startDate
+      endDate
+      endDateUnix
+      appLinks
+      isAppsOnly
+      isActive
+      hideGimmick
+      isCheckImei
+    }
+    thematicCampaign {
+      additionalInfo
+      background
+      campaignName
+      icon
+    }
+  }
+}
+
+fragment ProductHighlight on pdpDataProductContent {
+  name
+  price {
+    value
+    currency
+  }
+  campaign {
+    campaignID
+    campaignType
+    campaignTypeName
+    campaignIdentifier
+    background
+    percentageAmount
+    originalPrice
+    discountedPrice
+    originalStock
+    stock
+    stockSoldPercentage
+    threshold
+    startDate
+    endDate
+    endDateUnix
+    appLinks
+    isAppsOnly
+    isActive
+    hideGimmick
+  }
+  thematicCampaign {
+    additionalInfo
+    background
+    campaignName
+    icon
+  }
+  stock {
+    useStock
+    value
+    stockWording
+  }
+  variant {
+    isVariant
+    parentID
+  }
+  wholesale {
+    minQty
+    price {
+      value
+      currency
+    }
+  }
+  isCashback {
+    percentage
+  }
+  isTradeIn
+  isOS
+  isPowerMerchant
+  isWishlist
+  isCOD
+  isFreeOngkir {
+    isActive
+  }
+  preorder {
+    duration
+    timeUnit
+    isActive
+    preorderInDays
+  }
+}
+
+query PDPGetLayoutQuery($shopDomain: String, $productKey: String, $layoutID: String, $apiVersion: Float, $userLocation: pdpUserLocation!) {
+  pdpGetLayout(shopDomain: $shopDomain, productKey: $productKey, layoutID: $layoutID, apiVersion: $apiVersion, userLocation: $userLocation) {
+    name
+    pdpSession
+    basicInfo {
+      alias
+      id: productID
+      shopID
+      shopName
+      minOrder
+      maxOrder
+      weight
+      weightUnit
+      condition
+      status
+      url
+      needPrescription
+      catalogID
+      isLeasing
+      isBlacklisted
+      menu {
+        id
+        name
+        url
+      }
+      category {
+        id
+        name
+        title
+        breadcrumbURL
+        isAdult
+        detail {
+          id
+          name
+          breadcrumbURL
+          isAdult
+        }
+      }
+      blacklistMessage {
+        title
+        description
+        button
+        url
+      }
+      txStats {
+        transactionSuccess
+        transactionReject
+        countSold
+        paymentVerified
+        itemSoldPaymentVerified
+      }
+      stats {
+        countView
+        countReview
+        countTalk
+        rating
+      }
+    }
+    components {
+      name
+      type
+      position
+      data {
+        ...ProductHighlight
+        ...ProductVariant
+      }
+    }
+  }
+}`
     }
     ])
 }

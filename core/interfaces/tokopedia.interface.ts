@@ -2,6 +2,11 @@ export type TokopediaShopOptions = {
     shopName: string
 }
 
+export type TokopediaProductSearchByIdOptions ={
+    shopIds: string[];
+    productIds: string[]
+}
+
 export type TokopediaShopProductsOptions = {
     shopId: string | number;
     offset: number;
@@ -15,7 +20,7 @@ export type TokopediaProductDetailOptions = {
     apiVersion: number;
 }
 
-export interface FetchData { 
+export interface FetchDataProduct { 
     store: any;
     options: TokopediaProductDetailOptions | TokopediaShopOptions | TokopediaShopProductsOptions;
     payload: any;

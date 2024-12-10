@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { submitHandlerAdapter } from '~adapter/tokopedia';
+import ArrayInput from '../array-input';
 
-const ConfigForm = ({ submitHandler, finished}) => {
-  const [pageTo, setPageTo] = useState(2);
-  const [pageFrom, setPageFrom] = useState(1)
+const ProductSearchForm = ({ submitHandler, finished, channel}) => {
+  const [productIds, setProductIds] = useState([]);
+  const [shopIds, setShopIds] = useState([])
   const [sort, setSort] = useState(false);
   const [offset, setOffset] = useState(80);
 
-  const handlePageFromChange = (e) => setPageFrom(e.target.value);
-  const handlePageToChange = (e) => setPageTo(e.target.value)
+  const handleProductIdsChange = (e) => setProductIds(e.target.value);
+  const handleShopIdsChange = (e) => setShopIds(e.target.value)
   const handleSortChange = (e) => setSort(e.target.checked);
   const handleOffsetChange = (e) => setOffset(e.target.value);
   const [isDone, setIsDone] = useState(true)
@@ -15,13 +17,10 @@ const ConfigForm = ({ submitHandler, finished}) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsDone(false)
-    const response = await submitHandler({
-      pageFrom,
-      pageTo,
-      offset,
-      ...(sort ? { sort: 1 } : { sort: 0 })
+    return submitHandlerAdapter[channel](submitHandler, {
+      productIds, 
+      shopIds
     })
-    return
   };
 
   useEffect(() => {
@@ -33,70 +32,33 @@ const ConfigForm = ({ submitHandler, finished}) => {
   return (
 
     <form onSubmit={handleSubmit} className="w-full">
-      <div className="mb-6 flex flex-row gap-2">
-        <div className='flex flex-col'>
+      <div className="mb-6 flex flex-col gap-2">
+        <div className=''>
           <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="page">
-            Page From
+            Product Ids 
           </label>
-          <input
-            id="pageStart"
-            name="page"
-            type='number'
-            value={pageFrom}
-            onChange={handlePageFromChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:ring-red-200"
-          >
-          </input>
-        </div>
-        <div className='flex flex-col'>
-          <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="page">
-            Page To
-          </label>
-          <input
-            id="pageStart"
-            name="page"
-            type='number'
-            value={pageTo}
-            onChange={handlePageToChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:ring-red-200"
-          >
-          </input>
-        </div>
-      </div>
-      <div className="mb-6 flex flex-row gap-2 w-full">
-        <div className='flex flex-col basis-1/2'>
-          <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="offset">
-            Offset
-          </label>
-          <input
-            id="offset"
-            name="offset"
-            type='number'
-            value={offset}
-            onChange={handleOffsetChange}
+          <ArrayInput
+            id="productIds"
+            name="productids"
+            placeholder={"Input product ids"}
+            setItems={setProductIds}
+            items={productIds}
             className="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:ring-red-200"
           />
         </div>
-        <div className='flex flex-col basis-1/2'>
-          <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="sort">
-            Sort
+        <div className=''>  
+          <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="page">
+            Shop Ids
           </label>
-          <div className="flex items-center justify-center">
-            <input
-              type="checkbox"
-              id="sort"
-              name="sort"
-              checked={sort}
-              onChange={handleSortChange}
-              className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
-            />
-            <label htmlFor="sort" className="ml-2 text-sm text-gray-600">
-              Ascending Sort
-            </label>
-          </div>
-
+          <ArrayInput
+            id="shopIds"
+            name="shopids"
+            setItems={setShopIds}
+            placeholder={"Input shop ids"}
+            items={shopIds}
+            className="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:ring-red-200"
+          />
         </div>
-
       </div>
 
 
@@ -117,4 +79,4 @@ const ConfigForm = ({ submitHandler, finished}) => {
   );
 };
 
-export default ConfigForm;
+export default ProductSearchForm;

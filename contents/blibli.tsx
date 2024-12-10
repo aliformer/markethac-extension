@@ -5,7 +5,7 @@ import type { PlasmoCSConfig, PlasmoCSUIAnchor, PlasmoGetInlineAnchor, PlasmoGet
 import cssText from "data-text:~/contents/app.css"
 import { DialogProvider, useDialog } from "../core/ui/dialog-context"
 import {Main} from "../core/ui/blibli/main"
-import { fetchData, tokopediaProductDetail, tokopediaShopInfoPayload, tokopediaShopProductPayload } from "../core/utils/tokopedia";
+import { fetchDataProducts, tokopediaProductDetail, tokopediaShopInfoPayload, tokopediaShopProductPayload } from "../core/service/tokopedia";
 export const config: PlasmoCSConfig = {
   matches: ["https://www.blibli.com/**/*"],
   css: ["font.css"],

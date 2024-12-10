@@ -19,8 +19,9 @@ const Dialog = ({ items, channel}: { items: any[], channel:string }) => {
             product_name: alias,
             shop_ID: shopID,
             shop_name: shopName,
-            product_id: data.sku,
+            product_id: productId,
             count_sold: count_sold,
+            channel: "blibli",
             ...data.categoryNameHierarchy.reduce((prevItem, item, index) => 
                 { 
                     prevItem[`category_L${index + 1}`]  =  `${item} - ${data.categoryIdHierarchy[index]}`
@@ -35,14 +36,20 @@ const Dialog = ({ items, channel}: { items: any[], channel:string }) => {
         const alias = data.basicInfo?.alias || 'N/A';
         const shopID = data.basicInfo?.shopID || 'N/A';
         const shopName = data.basicInfo?.shopName || 'N/A';
-        const count_sold = data.basicInfo?.txStats?.countSold || 'N/A';
+        const sales_count = data.basicInfo?.txStats?.countSold || 'N/A';
+        const sale_price = data.components.find(component => component.name === "product_content")?.data?.[0]?.price?.value
+
+        const productID = data.basicInfo?.id || 'N/A'
         return {
             category_name: category,
             category_id: categoryID,
             product_name: alias,
             shop_ID: shopID,
+            product_ID: productID,
             shop_name: shopName,
-            count_sold: count_sold,
+            sales_count: sales_count,
+            sales_price: sale_price,
+            channel: "tokopedia",
             ...data.basicInfo?.category?.detail.reduce((prevItem, item, index) => 
                 { 
                     prevItem[`category_L${index + 1}`]  =  `${item.name} - ${item.id}`
@@ -76,8 +83,8 @@ const Dialog = ({ items, channel}: { items: any[], channel:string }) => {
         }
     }
     return (
-        <div className="flex justify-end items-end">
-            <dialog ref={dialogRef} className="p-6 bg-white rounded shadow-lg">
+        <div className="flex justify-end items-end ">
+            <dialog ref={dialogRef} className="p-6 bg-white rounded shadow-lg min-w-2xl max-w-8xl w-full">
                 <h2 className="text-xl font-semibold mb-4">Data Preview </h2>
                 <div className='p-3'>
                     <button onClick={downloadCSVFile}>
@@ -85,7 +92,7 @@ const Dialog = ({ items, channel}: { items: any[], channel:string }) => {
                     </button>
                     
                 </div>
-                <div className="flex flex-col max-h-[400px] overflow-y-auto">
+                <div className="flex flex-col max-w-8xl ">
                     <DynamicTable data={productList} />
                 </div>
                 <div className='flex justify-start py-2'>

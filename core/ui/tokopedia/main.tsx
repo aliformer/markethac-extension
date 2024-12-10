@@ -2,10 +2,15 @@ import { useEffect, useState } from "react"
 import table from "data-base64:~assets/table.svg"
 import { useDialog } from "../dialog-context";
 import Dialog from "../dialog";
-import ConfigForm from "../form";
+import ConfigForm from "../product-detail/form";
 import { tokopediaResponse } from "~core/helper/response-mapper";
-import type { FetchData, TokopediaProductDetailOptions, TokopediaShopProductsOptions } from "~core/interfaces/tokopedia.interface";
-import { tokopediaProductDetail } from "~core/utils/tokopedia";
+import type { FetchDataProduct, TokopediaProductDetailOptions, TokopediaShopProductsOptions } from "~core/interfaces/tokopedia.interface";
+import { tokopediaProductDetail } from "~core/service/tokopedia";
+import {Tab} from "../tab";
+import { WrapperDialog } from "./tokopedia-wrapper-dialog";
+import ProductDetailsForm from "../product-detail/form";
+import ProductSearchForm from "../product-search/form";
+import Layout from "../layout";
 export const Main = ({ fetchData, config }: { fetchData:any, config: any[] }) => {
     const [storeInfoConfig, storeProductConfig, productDetailConfig] = config
     const [isOpen, setIsOpen] = useState(false)
@@ -14,8 +19,10 @@ export const Main = ({ fetchData, config }: { fetchData:any, config: any[] }) =>
     const [shopName, setShopName] = useState('')
     const [isDone, setIsDone] = useState(false) 
     const [productDetails,setProductDetails] = useState([])
+    const [productDetailsById,setProductDetailsById] = useState([])
+    const [productByIds, setProductByIds] = useState([])
     const fetchShopInfo = async (shopName: string) => {
-        const result =  await fetchData({  options: { shopName }, payload: storeInfoConfig, mapper: tokopediaResponse.shopInfoMapper, append: false }) as FetchData
+        const result =  await fetchData({  options: { shopName }, payload: storeInfoConfig, mapper: tokopediaResponse.shopInfoMapper, append: false }) as FetchDataProduct
         setShopInfo(result)
         return result
     }
@@ -26,7 +33,31 @@ export const Main = ({ fetchData, config }: { fetchData:any, config: any[] }) =>
             fetchShopInfo(shopName)
         }
     }, [fetchData])
-    
+
+    const generatePoductListfromID = async ({productIds, shopIds}:{shopIds:string[]; productIds:string[]}) => {
+        let dumpResponse =[] 
+        for (let [index, productKey] of productIds.entries() ){
+            const options: TokopediaProductDetailOptions = {
+                shopDomain: shopIds[index],
+                productKey:productKey,
+                apiVersion: 1
+            }
+            if(tokopediaResponse.productDetailResponse){
+            const result = await fetchData({
+                options: options,
+                payload: productDetailConfig, 
+                append: true,
+                mapper:tokopediaResponse.productDetailResponse
+            })
+            dumpResponse = [...dumpResponse , result]
+        }
+
+
+        }
+        setProductDetailsById(dumpResponse)
+        console.log('dumpResponse', dumpResponse)
+        return dumpResponse
+    }
     const generateProductList = async ({
         offset,
         sort,
@@ -53,6 +84,7 @@ export const Main = ({ fetchData, config }: { fetchData:any, config: any[] }) =>
      setShopProducts(dumpResponse)
      return dumpResponse
     }
+
 
     const generateProductDetails = async () => {
         let dumpResponse =[] 
@@ -88,38 +120,32 @@ export const Main = ({ fetchData, config }: { fetchData:any, config: any[] }) =>
     ,[shopProducts])
 
     return (
+        <Layout isOpen={isOpen} setIsOpen={setIsOpen} openDialog={openDialog}>
+     
+            {isOpen && (
+                    <Tab  tabs={
+                        [
 
-        <div className="relative inline-block">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="bg-none text-white px-4 py-2 rounded"
-            >
-                <img src="https://strapi.markethac.id/uploads/logo_b49588e089_c17e374a5a.svg" width={32} height={32} alt="markethac-logo" />
+                            {
+                                label: "Search By Shop",
+                                component: isOpen && (<WrapperDialog openDialog={openDialog} isDone={isDone} shopInfo={shopInfo} >
+                                <ProductDetailsForm submitHandler={generateProductList} finished={productDetails.length} channel="tokopedia" shopInfo={shopInfo}/> 
+                                <Dialog items={productDetails} channel="tokopedia" />
+                                </WrapperDialog>)
+                            },
+                            {
+                                label: "Search by ID",
+                                component: isOpen && (<WrapperDialog openDialog={openDialog} isDone={isDone} shopInfo={shopInfo} >
+                                <ProductSearchForm submitHandler={generatePoductListfromID} finished={productDetailsById.length} channel="tokopedia"/> 
+                                <Dialog items={productDetailsById} channel="tokopedia" />
 
-            </button>
-            {isOpen && shopInfo && (
+                                </WrapperDialog>)
+                            },
 
-                <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-[250px] bg-white border border-gray-200 rounded shadow-lg">
-                    <div className="p-4 w-full flex flex-col">
-                        <div className="flex justify-around items-stretch mb-4">
-                            {shopInfo.length &&
-                                <img src={shopInfo[0].shopImage} width={24} height={24} alt="shop-image" />
-                            }
-                            {shopInfo.length &&
-                                <p className="font-mono font-semibold">Shop ID: {shopInfo[0].basicInfo.shopID}</p>
-                            }
-                            {isDone ? <button className="bg-none" onClick={openDialog}>
-                                <img src={table} width={24} height={24} alt="icon-table" />
-                            </button> : <>
-                            </>}
-                        </div>
-
-                        <ConfigForm submitHandler={generateProductList} finished={productDetails.length}/>
-                    </div>
-                </div>
-            )}
-            <Dialog items={productDetails} channel="tokopedia" />
-        </div>
+                        ]
+                    }/>
+                )}
+                   </Layout>
     );
 };
 

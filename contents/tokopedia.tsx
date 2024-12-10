@@ -3,7 +3,7 @@ import type { PlasmoCSConfig, PlasmoCSUIAnchor, PlasmoGetInlineAnchor, PlasmoGet
 import cssText from "data-text:~/contents/app.css"
 import { DialogProvider, useDialog } from "../core/ui/dialog-context"
 import {Main} from "../core/ui/tokopedia/main"
-import { fetchData, tokopediaProductDetail, tokopediaShopInfoPayload, tokopediaShopProductPayload } from "../core/utils/tokopedia";
+import { fetchDataProducts, tokopediaProductDetail, tokopediaShopInfoPayload, tokopediaShopProductPayload } from "../core/service/tokopedia";
 export const config: PlasmoCSConfig = {
   matches: ["https://www.tokopedia.com/**"],
   css: ["font.css"],
@@ -22,7 +22,7 @@ export const getInlineAnchor: PlasmoGetInlineAnchor = async () =>
 const OverlayTokopedia= () => {
   
   return (<DialogProvider>
-    <Main fetchData={fetchData} config ={[tokopediaShopInfoPayload, tokopediaShopProductPayload, tokopediaProductDetail]}/>
+    <Main fetchData={fetchDataProducts} config ={[tokopediaShopInfoPayload, tokopediaShopProductPayload, tokopediaProductDetail]}/>
   </DialogProvider>)
 }
 

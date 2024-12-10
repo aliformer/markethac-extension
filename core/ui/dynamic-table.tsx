@@ -8,23 +8,25 @@ export const DynamicTable = ({ data }) => {
     const headers = Object.keys(data[0]);
   
     return (
-      <table>
-        <thead>
-          <tr>
+      <div className="overflow-auto max-h-[400px]">
+      <table className="min-w-full bg-white border border-gray-200 shadow rounded-lg">
+        <thead  className="bg-gray-100">
+          <tr >
             {headers.map((header) => (
-              <th key={header}>{header}</th>
+              <th key={header} className="text-left px-4 py-2 border-b border-gray-200 text-sm font-medium text-gray-600">{header}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {data.map((item, index) => (
-            <tr key={index}>
+            <tr key={index}  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
               {headers.map((header) => (
-                <td key={header}>{item[header]}</td>
+                <td key={header} className="px-4 py-2 border-b border-gray-200 text-sm text-gray-800">{item[header]?.length > 30 ? item[header].substring(0, 30) + "..." : item[header]}</td>
               ))}
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
     );
   };
