@@ -3,13 +3,11 @@ import { submitHandlerAdapter } from '~adapter/tokopedia';
 import ArrayInput from '../array-input';
 
 const ProductSearchForm = ({ submitHandler, finished, channel}) => {
-  const [productIds, setProductIds] = useState([]);
-  const [shopIds, setShopIds] = useState([])
+  const [urlProducts, setUrlProducts] = useState([]);
   const [sort, setSort] = useState(false);
   const [offset, setOffset] = useState(80);
 
-  const handleProductIdsChange = (e) => setProductIds(e.target.value);
-  const handleShopIdsChange = (e) => setShopIds(e.target.value)
+  const handleProductIdsChange = (e) => setUrlProducts(e.target.value);
   const handleSortChange = (e) => setSort(e.target.checked);
   const handleOffsetChange = (e) => setOffset(e.target.value);
   const [isDone, setIsDone] = useState(true)
@@ -18,8 +16,7 @@ const ProductSearchForm = ({ submitHandler, finished, channel}) => {
     e.preventDefault();
     setIsDone(false)
     return submitHandlerAdapter[channel](submitHandler, {
-      productIds, 
-      shopIds
+      urlProducts
     })
   };
 
@@ -35,30 +32,18 @@ const ProductSearchForm = ({ submitHandler, finished, channel}) => {
       <div className="mb-6 flex flex-col gap-2">
         <div className=''>
           <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="page">
-            Product Ids 
+            Product Urls 
           </label>
           <ArrayInput
-            id="productIds"
-            name="productids"
-            placeholder={"Input product ids"}
-            setItems={setProductIds}
-            items={productIds}
+            id="urlProducts"
+            name="productUrls"
+            placeholder={"Input url products"}
+            setItems={setUrlProducts}
+            items={urlProducts}
             className="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:ring-red-200"
           />
         </div>
-        <div className=''>  
-          <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="page">
-            Shop Ids
-          </label>
-          <ArrayInput
-            id="shopIds"
-            name="shopids"
-            setItems={setShopIds}
-            placeholder={"Input shop ids"}
-            items={shopIds}
-            className="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:ring-red-200"
-          />
-        </div>
+
       </div>
 
 

@@ -3,8 +3,7 @@ export type TokopediaShopOptions = {
 }
 
 export type TokopediaProductSearchByIdOptions ={
-    shopIds: string[];
-    productIds: string[]
+    urlProducts:string[]
 }
 
 export type TokopediaShopProductsOptions = {

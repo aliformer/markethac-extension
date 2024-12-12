@@ -57,15 +57,39 @@ const Dialog = ({ items, channel}: { items: any[], channel:string }) => {
                 }, {})
         };
     }
+
+    function extractShopeeData(data){
+        const { categories, fe_categories } = data;
+          const mainCategory = categories[categories.length - 1];
+          const CategoryId = mainCategory.catid;
+          const CategoryChannel = mainCategory.display_name;
+          const L1 = fe_categories[0].display_name;
+          const L2 = fe_categories[1].display_name;
+
+
+        return {
+            category_id: CategoryId,
+            category_channel:CategoryChannel,
+            L1 : L1,
+            L2: L2,
+            category: mainCategory,
+            channel: "shopee",
+        }
+    }
     useEffect(() => {
         if(items.length){
         const productList = items?.map((item: any) => {
-            if(channel === 'tokopedia'){
+            switch(channel){
+            case 'tokopedia': {
             return extractPdpInfo(item)
             }
-            else if (channel === 'blibli'){
+            case 'blibli': {
             return extractProductInfo(item)
             }
+            case 'shopee':{
+                return extractShopeeData(item)
+            }
+        }
         })
         console.log('product list', productList)
         setProductList(productList)

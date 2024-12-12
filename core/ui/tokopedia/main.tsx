@@ -34,11 +34,13 @@ export const Main = ({ fetchData, config }: { fetchData:any, config: any[] }) =>
         }
     }, [fetchData])
 
-    const generatePoductListfromID = async ({productIds, shopIds}:{shopIds:string[]; productIds:string[]}) => {
+    const generatePoductListfromID = async ({urlProducts}:{urlProducts:[]}) => {
         let dumpResponse =[] 
-        for (let [index, productKey] of productIds.entries() ){
+        for (let urlProduct of urlProducts ){
+            const shopDomain = (urlProduct as string).split('/').at(-2)
+            const productKey = (urlProduct as string).split('/').at(-1)
             const options: TokopediaProductDetailOptions = {
-                shopDomain: shopIds[index],
+                shopDomain: shopDomain,
                 productKey:productKey,
                 apiVersion: 1
             }

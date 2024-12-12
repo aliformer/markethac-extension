@@ -12,7 +12,7 @@ export const fetchDataProducts = async ({options, payload, mapper, append }: Fet
     }
     const _abck = getCookieValue('_abck')
     const bm_sz = getCookieValue('bm_sz')
-    const url = 'https://gql.tokopedia.com'
+    const url = "https://gql.tokopedia.com"
     let requestConfig = {
         method: 'POST',
         headers: {
