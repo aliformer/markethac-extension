@@ -10,6 +10,8 @@
     "package": "plasmo package"
   },
   "dependencies": {
+    "@plasmohq/messaging": "^0.6.2",
+    "axios": "^1.7.9",
     "plasmo": "0.88.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",

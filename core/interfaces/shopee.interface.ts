@@ -20,9 +20,7 @@ export type ShopeeProductDetailOptions = {
 }
 
 export interface FetchDataProduct { 
-    store: any;
-    options: {headers:Record<string, any>, url: string }
-    payload: any;
+    options: ShopeeProductDetailOptions | ShopeeShopOptions
     mapper: any;
     append: boolean
 }

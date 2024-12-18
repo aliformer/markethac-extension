@@ -3,13 +3,23 @@ import table from "data-base64:~assets/table.svg"
 import { useDialog } from "../dialog-context";
 import Dialog from "../dialog";
 import { fetchData } from "~core/service/blibli";
+import type { ShopeeProductDetailOptions } from "~core/interfaces/shopee.interface";
+import { fetchDataProducts, searchByIdParams } from "~core/service/shopee";
+import Layout from "../layout";
+import { Tab } from "../tab";
+import { WrapperDialog } from "../tokopedia/tokopedia-wrapper-dialog";
+import ProductSearchForm from "../product-search/form";
+import { shopeeUrlMatch } from "~core/helper/url-mapper";
 
 export const Main = () => {
     const [isOpen, setIsOpen] = useState(false)
     const [shopInfo, setShopInfo] = useState(null)
     const [shopProducts, setShopProducts] = useState([])
     const [shopID, setShopID] = useState('')
+    const [urlProducts, setUrlProducts] = useState([])
     const [productDetails,setProductDetails] = useState([])
+    const [productDetailsById,setProductDetailsById] = useState<any[]> ([])
+    const [isDone, setIsDone] = useState(false) 
     const fetchProducts = async (shopID) => {
         const result = await  fetchData({config:{
             shopID
@@ -31,6 +41,28 @@ export const Main = () => {
         setProductDetails(dumpResponse)
         return dumpResponse
     }
+
+ const generatePoductListfromID = async ({urlProducts}:{urlProducts:[]}) => {
+        let dumpResponse =[] 
+        for (let urlProduct of urlProducts ){
+            const {shop_id, item_id} = shopeeUrlMatch(urlProduct) as Record<string, string>
+            const options: ShopeeProductDetailOptions = {
+                shop_id,
+                item_id
+            }
+            const result = await fetchDataProducts({
+                options: options,
+                append: true,
+                mapper: searchByIdParams
+            })
+            console.log('result', result)
+            dumpResponse = [...dumpResponse , result]
+        }
+        setProductDetailsById(dumpResponse)
+        console.log('dumpResponse', dumpResponse)
+        return dumpResponse
+    }
+
     useEffect(() => {
     const shopID = window.location.pathname.split('/')[3] 
     if(shopID){
@@ -39,40 +71,34 @@ export const Main = () => {
     }
      
 },[])
+// useEffect(() => {
+//     generateProductDetails()
+//     setIsDone(true)
+// })
 
     const { openDialog } = useDialog()
 
     return (
+        <Layout isOpen={isOpen} setIsOpen={setIsOpen} openDialog={openDialog}>
+     
+        {isOpen && (
+                <Tab  tabs={
+                    [
 
-        <div className="relative inline-block">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="bg-none text-white px-4 py-2 rounded"
-            >
-                <img src="https://strapi.markethac.id/uploads/logo_b49588e089_c17e374a5a.svg" width={32} height={32} alt="markethac-logo" />
+                        
+                        {
+                            label: "Search by ID",
+                            component: isOpen && (<WrapperDialog openDialog={openDialog} isDone={isDone} shopInfo={shopInfo} >
+                            <ProductSearchForm submitHandler={generatePoductListfromID} finished={productDetailsById.length} channel="shopee"/> 
+                           { /* <Dialog items={productDetailsById} channel="shopee" /> */}
 
-            </button>
-            {isOpen  && (
+                            </WrapperDialog>)
+                        },
 
-                <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-[250px] bg-white border border-gray-200 rounded shadow-lg">
-                    <div className="p-4 w-full flex flex-col">
-                        <div className="flex justify-around items-stretch mb-4">
-                            {/* {shopInfo.length &&
-                                <img src={shopInfo[0].shopImage} width={24} height={24} alt="shop-image" />
-                            }
-                            {shopInfo.length &&
-                                <p className="font-mono font-semibold">Shop ID: {shopInfo[0].basicInfo.shopID}</p>
-                            } */}
-                            <button className="bg-none" onClick={openDialog}>
-                                <img src={table} width={24} height={24} alt="icon-svg" />
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
+                    ]
+                }/>
             )}
-            <Dialog items={productDetails} channel="blibli"/>
-        </div>
+               </Layout>
     );
 };
 

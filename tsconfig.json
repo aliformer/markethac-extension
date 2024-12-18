@@ -7,7 +7,7 @@
     ".plasmo/index.d.ts",
     "./**/*.ts",
     "./**/*.tsx"
-, "core/store"  ],
+, "core/store", "core/worker/shopee.js"  ],
   "compilerOptions": {
     "paths": {
       "~*": [

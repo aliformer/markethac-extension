@@ -10,7 +10,7 @@ const Layout = ({isOpen, setIsOpen, openDialog, children}: React.PropsWithChildr
             <img src="https://strapi.markethac.id/uploads/logo_b49588e089_c17e374a5a.svg" width={32} height={32} alt="markethac-logo" />
 
         </button>
-        <div className="absolute left-1/2 transform -translate-x-1/2 mt-1 w-[300px] bg-white border border-gray-200 rounded shadow-lg">
+        <div className="absolute left-1/2 transform -translate-x-1/2 mt-1 w-[300px] bg-white  rounded shadow-lg">
         {isOpen && <div className="w-auto p-3 justify-between flex"> 
             <h1 className="text-center font-bold"> Markethac Data Finder</h1>
             <button className="bg-none" onClick={openDialog}>
