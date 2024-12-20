@@ -21,6 +21,7 @@ export type ShopeeProductDetailOptions = {
 
 export interface FetchDataProduct { 
     options: ShopeeProductDetailOptions | ShopeeShopOptions
+    handler: any;
     mapper: any;
     append: boolean
 }

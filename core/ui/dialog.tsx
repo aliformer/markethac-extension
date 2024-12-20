@@ -4,14 +4,14 @@ import { useDialog } from './dialog-context';
 import { DynamicTable } from './dynamic-table';
 import csv from "data-base64:~assets/csv-icon.svg"
 import { jsonToCsv, downloadCsv } from '~core/helper/json-to-csv';
-const Dialog = ({ items, channel}: { items: any[], channel:string }) => {
+const Dialog = ({ items, channel }: { items: any[], channel: string }) => {
 
     const { closeDialog, dialogRef } = useDialog();
     const [productList, setProductList] = useState([])
     const [csvData, setCsvData] = useState(null)
     function extractProductInfo(data) {
         const alias = data.name || 'N/A';
-        const productId= data.sku || 'N/A';
+        const productId = data.sku || 'N/A';
         const shopID = data.merchantCode || 'N/A';
         const shopName = data.merchantName || 'N/A';
         const count_sold = data.soldRangeCount?.id || 'N/A';
@@ -22,15 +22,14 @@ const Dialog = ({ items, channel}: { items: any[], channel:string }) => {
             product_id: productId,
             count_sold: count_sold,
             channel: "blibli",
-            ...data.categoryNameHierarchy.reduce((prevItem, item, index) => 
-                { 
-                    prevItem[`category_L${index + 1}`]  =  `${item} - ${data.categoryIdHierarchy[index]}`
-                    return prevItem
-                }, {})
+            ...data.categoryNameHierarchy.reduce((prevItem, item, index) => {
+                prevItem[`category_L${index + 1}`] = `${item} - ${data.categoryIdHierarchy[index]}`
+                return prevItem
+            }, {})
         };
     }
 
-    function extractPdpInfo(data){
+    function extractPdpInfo(data) {
         const category = data.basicInfo?.category?.name || 'N/A';
         const categoryID = data.basicInfo?.category?.id || 'N/A';
         const alias = data.basicInfo?.alias || 'N/A';
@@ -50,60 +49,73 @@ const Dialog = ({ items, channel}: { items: any[], channel:string }) => {
             sales_count: sales_count,
             sales_price: sale_price,
             channel: "tokopedia",
-            ...data.basicInfo?.category?.detail.reduce((prevItem, item, index) => 
-                { 
-                    prevItem[`category_L${index + 1}`]  =  `${item.name} - ${item.id}`
-                    return prevItem
-                }, {})
+            ...data.basicInfo?.category?.detail.reduce((prevItem, item, index) => {
+                prevItem[`category_L${index + 1}`] = `${item.name} - ${item.id}`
+                return prevItem
+            }, {})
         };
     }
 
-    function extractShopeeData(data){
-        const { categories, fe_categories } = data;
-          const mainCategory = categories[categories.length - 1];
-          const CategoryId = mainCategory.catid;
-          const CategoryChannel = mainCategory.display_name;
-          const L1 = fe_categories[0].display_name;
-          const L2 = fe_categories[1].display_name;
+    function extractShopeeData(data) {
+        const { categories, fe_categories, price, title } = data.item;
+        const { shop_detailed, product_review, product_price } = data
+        const mainCategory = categories[categories.length - 1];
+
+        const CategoryId = mainCategory.catid;
+        const CategoryChannel = mainCategory.display_name;
+        const L1 = fe_categories[0].display_name;
+        const L2 = fe_categories[1].display_name;
+        const L3 = fe_categories?.[2]?.display_name
+        const alias = title
+        const shopID = shop_detailed.account.username
+        const shopName = shop_detailed.name
+        const sales_count = product_review.global_sold
+        const sales_price = product_price.price.single_value / 100000
 
 
         return {
             category_id: CategoryId,
-            category_channel:CategoryChannel,
-            L1 : L1,
+            category_name: CategoryChannel,
+            L1: L1,
             L2: L2,
-            category: mainCategory,
+            L3: L3,
             channel: "shopee",
+            product_name: alias,
+            shop_ID: shopID,
+            shop_name: shopName,
+            sales_count: sales_count,
+            sale_price: sales_price
         }
     }
     useEffect(() => {
-        if(items.length){
-        const productList = items?.map((item: any) => {
-            switch(channel){
-            case 'tokopedia': {
-            return extractPdpInfo(item)
-            }
-            case 'blibli': {
-            return extractProductInfo(item)
-            }
-            case 'shopee':{
-                return extractShopeeData(item)
+        console.log('items', items)
+        if (items.length) {
+            const productList = items?.map((item: any) => {
+                switch (channel) {
+                    case 'tokopedia': {
+                        return extractPdpInfo(item)
+                    }
+                    case 'blibli': {
+                        return extractProductInfo(item)
+                    }
+                    case 'shopee': {
+                        return extractShopeeData(item)
+                    }
+                }
+            })
+            console.log('product list', productList)
+            setProductList(productList)
+            if (productList.length) {
+
+                const csvResult = jsonToCsv(productList)
+                setCsvData(csvResult)
             }
         }
-        })
-        console.log('product list', productList)
-        setProductList(productList)
-        if(productList.length){
-            
-        const csvResult = jsonToCsv(productList)
-        setCsvData(csvResult)
-        }
-    }
-    },[items])
+    }, [items])
 
     const downloadCSVFile = () => {
-        if(csvData){
-        downloadCsv(csvData, `${channel}.csv` )
+        if (csvData) {
+            downloadCsv(csvData, `${channel}.csv`)
         }
     }
     return (
@@ -112,9 +124,9 @@ const Dialog = ({ items, channel}: { items: any[], channel:string }) => {
                 <h2 className="text-xl font-semibold mb-4">Data Preview </h2>
                 <div className='p-3'>
                     <button onClick={downloadCSVFile}>
-                    <img src={csv} width={24} height={24} alt="icon-csv" />
+                        <img src={csv} width={24} height={24} alt="icon-csv" />
                     </button>
-                    
+
                 </div>
                 <div className="flex flex-col max-w-8xl ">
                     <DynamicTable data={productList} />

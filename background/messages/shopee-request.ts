@@ -1,24 +1,44 @@
-
 import type { PlasmoMessaging } from "@plasmohq/messaging"
-import axios from 'axios';
+import axios from "axios"
 
-// Create an Axios instance
+const username = "root"
+const password = "insignia2023"
+const brigeUrl = process.env.PLASMO_PUBLIC_BRIDGE_URL
+
 const client = axios.create({
-  baseURL: 'https://shopee.co.id', // Replace with your base URL
-  headers: {
-    'User-Agent': 'MyApp/1.0 (https://myapp.example.com)', // Set your custom User-Agent
-  },
-});
-
+    headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Basic " + btoa(`${username}:${password}`),
+    }
+})
 
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
-    const result = await client.get(req.body.url, {
-        headers: {...req.body.headers, cookie: req.body.cookie},
+    let cookieShopee = []
+    const domains = ["shopee.co.id", ".shopee.co.id"]
 
-    }).then(data => data.data).catch(error => error)
-    res.send(
-        { ...result }
+    const cookies = await Promise.all(
+        domains.map(domain => 
+            chrome.cookies.getAll({ domain })
+        )
     )
+
+    cookieShopee.push(...cookies.flat())
+
+    const cookie = await cookieShopee.reduce((acc, obj, index) => {
+        const pair = `${obj.name}=${obj.value}`;
+        return index === 0 ? pair : `${acc}, ${pair}`;
+      }, "")
+
+    const url = new URL(brigeUrl)
+    url.pathname  = req.body.pathname
+    url.search = req.body.search
+    // url.searchParams.append('cookie', encodeURIComponent(cookie) )
+    console.log('cookie',cookieShopee)
+    const result = await client.get(url.href).then(data => data.data).catch(error => error)
+    console.log('result', result)
+    res.send(
+        { ...result}
+    )   
 }
 
 export default handler

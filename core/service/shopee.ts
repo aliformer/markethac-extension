@@ -2,28 +2,28 @@ import type { FetchDataProduct, ShopeeProductDetailOptions, ShopeeProductSearchB
 import { sendToBackground } from "@plasmohq/messaging"
 const apiUrl = process.env.PLASMO_PUBLIC_SHOPEE_API_ENDPOINT
 import axios, { AxiosHeaders, type AxiosHeaderValue } from 'axios';
+import type { Url } from "url";
 
 // Create an Axios instance
 
 
 
-export const fetchDataProducts = async ({ options, mapper, append }: FetchDataProduct) => {
+export const fetchDataProducts = async ({ options, handler,  mapper, append }: FetchDataProduct) => {
     try {
-        const {url, headers}:{url: string , headers:AxiosHeaders} = await mapper(options)
-        axios.defaults.headers.common = {...headers,  cookie: document.cookie}
-        const result = await axios.get(url).then(data => data.data).catch(error => error)
-    
-        //    const result =  await sendToBackground({
-        //     name: "shopee-request",
-        //     body:{
-        //         headers: headers,
-        //         url: url, 
-        //         cookie: document.cookie
-        //     },
-        //     extensionId: 'egkmokngboengjblldjneoidclpbopfl'
-        // })
+        const {url, headers}:{url: URL , headers:AxiosHeaders} = await handler(options)
+          
+           const result =  await sendToBackground({
+            name: "shopee-request",
+            body:{
+                headers: headers,
+                pathname: url.pathname,
+                search: url.search, 
+                cookie: document.cookie
+            },
+            extensionId: 'egkmokngboengjblldjneoidclpbopfl'
+        })
         console.log('result form background', result)
-        return result
+        return result.data
     }
     catch (error) {
         console.log(error)
