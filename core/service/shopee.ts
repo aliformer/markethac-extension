@@ -3,11 +3,9 @@ import { sendToBackground } from "@plasmohq/messaging"
 const apiUrl = process.env.PLASMO_PUBLIC_SHOPEE_API_ENDPOINT
 import axios, { AxiosHeaders, type AxiosHeaderValue } from 'axios';
 import type { Url } from "url";
+const extensionId = process.env.PLASMO_PUBLIC_EXTENSION_ID;
 
 // Create an Axios instance
-
-
-
 export const fetchDataProducts = async ({ options, handler,  mapper, append }: FetchDataProduct) => {
     try {
         const {url, headers}:{url: URL , headers:AxiosHeaders} = await handler(options)
@@ -20,8 +18,9 @@ export const fetchDataProducts = async ({ options, handler,  mapper, append }: F
                 search: url.search, 
                 cookie: document.cookie
             },
-            extensionId: 'egkmokngboengjblldjneoidclpbopfl'
-        })
+            extensionId
+            
+        } )
         console.log('result form background', result)
         return result.data
     }
@@ -50,7 +49,7 @@ export const searchByIdParams = async (options: ShopeeProductDetailOptions) => {
         body:{
             pathname: url.pathname + url.search
         },
-        extensionId: 'egkmokngboengjblldjneoidclpbopfl'
+        extensionId
     })
     return { url, headers }
 }

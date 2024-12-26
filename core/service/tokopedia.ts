@@ -1,5 +1,6 @@
 import type {FetchDataProduct as FetchData, TokopediaProductDetailOptions, TokopediaShopOptions, TokopediaShopProductsOptions } from "~core/interfaces/tokopedia.interface"
 
+const apiUrl = process.env.PLASMO_PUBLIC_TOKOPEDIA_API_ENDPOINT
 
 export const fetchDataProducts = async ({options, payload, mapper, append }: FetchData): Promise<any> => {
     try{
@@ -12,7 +13,7 @@ export const fetchDataProducts = async ({options, payload, mapper, append }: Fet
     }
     const _abck = getCookieValue('_abck')
     const bm_sz = getCookieValue('bm_sz')
-    const url = "https://gql.tokopedia.com"
+    const url = apiUrl
     let requestConfig = {
         method: 'POST',
         headers: {

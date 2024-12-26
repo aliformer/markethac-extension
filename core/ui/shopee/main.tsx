@@ -35,19 +35,20 @@ export const Main = () => {
     return (
         <Layout isOpen={isOpen} setIsOpen={setIsOpen} openDialog={openDialog}>
             {isOpen && (
-                <Tab tabs={[{
-                    label: "Search by ID",
-                    component: (
-                        <WrapperDialog isDone={isDone} openDialog={openDialog}>
-                            <ProductSearchForm
-                                submitHandler={generatePoductListfromID}
-                                finished={productDetailsById.length}
-                                channel="shopee"
-                            />
-                            <Dialog items={productDetailsById} channel="shopee" />
-                        </WrapperDialog>
-                    )
-                }]} />
+                <Tab tabs={[
+                    {
+                        label: "Search by Product ID",
+                        component: (
+                            <WrapperDialog isDone={isDone} openDialog={openDialog}>
+                                <ProductSearchForm
+                                    submitHandler={generatePoductListfromID}
+                                    finished={productDetailsById.length}
+                                    channel="shopee"
+                                />
+                                <Dialog items={productDetailsById} channel="shopee" />
+                            </WrapperDialog>
+                        )
+                    }]} />
             )}
         </Layout>
     );

@@ -2,7 +2,7 @@ import type { PlasmoCSConfig, PlasmoCSUIAnchor, PlasmoGetInlineAnchor, PlasmoGet
 
 import cssText from "data-text:~/contents/app.css"
 import { DialogProvider, useDialog } from "../core/ui/dialog-context"
-import {Main} from "../core/ui/shopee/main"
+import { Main } from "../core/ui/shopee/main"
 export const config: PlasmoCSConfig = {
   matches: ["https://shopee.co.id/**"],
   css: ["font.css"],
@@ -18,8 +18,8 @@ export const getShadowHostId = () => "shopee-inline"
 export const getInlineAnchor: PlasmoGetInlineAnchor = async () =>
   document.querySelector(`#sll2-ShopeeHeaderWithSearch > div > div > div.header-with-search__cart-wrapper`)
 
-const OverlayShopee= () => {
-  
+const OverlayShopee = () => {
+
   return (<DialogProvider>
     <Main />
   </DialogProvider>)

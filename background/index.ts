@@ -1,14 +1,21 @@
-import "@plasmohq/messaging/background"
 
-import { startHub } from "@plasmohq/messaging/pub-sub"
+import shopeeRequestHandler from "./messages/shopee-request"
 
+export {}
+
+type MessageHandler = (message: any, helpers: { send: (response: any) => void }) => void
+
+const handlers: Record<string, MessageHandler> = {
+  "shopee-request": shopeeRequestHandler
+}
+
+chrome.runtime.onStartup.addListener( () => {
+  console.log(`onStartup()`);
+});
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log("Received message in background worker:", message);
-  
-    if (message.type === "shopee-request") {
-      console.log("Test log from the background worker");
-      console.log(message)
-    //   sendResponse({ status: "success", data: "Logged successfully" });
-    }
-  });
-startHub()
+  const handler = handlers[message.name]
+  if (handler) {
+    handler(message, { send: sendResponse })
+    return true
+  }
+})
