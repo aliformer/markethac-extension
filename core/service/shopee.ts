@@ -14,8 +14,7 @@ export const fetchDataProducts = async ({ options, handler,  mapper, append }: F
             body:{
                 headers: headers,
                 pathname: url.pathname,
-                search: url.search, 
-                cookie: document.cookie
+                search: url.search
             },
             extensionId
             
