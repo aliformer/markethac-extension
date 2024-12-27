@@ -32,8 +32,8 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
     const url = new URL(brigeUrl)
     url.pathname  = req.body.pathname
     url.search = req.body.search
-    url.searchParams.append('cookie', encodeURIComponent(cookie) )
-    console.log('cookie',cookieShopee)
+    // url.searchParams.append('cookie', encodeURIComponent(cookie) )
+    // console.log('cookie',cookieShopee)
     const result = await client.get(url.href).then(data => data.data).catch(error => error)
     console.log('result', result)
     res.send(

@@ -26,7 +26,10 @@ export const Main = () => {
                 handler: searchByIdParams,
                 mapper: shopeeResponse.productDetailResponse
             })
-            dumpResponse.push(result)
+            if (result !== undefined) {
+                dumpResponse.push(result)
+            }
+
         }
         setProductDetailsById(dumpResponse)
         return dumpResponse

@@ -9,7 +9,6 @@ const extensionId = process.env.PLASMO_PUBLIC_EXTENSION_ID;
 export const fetchDataProducts = async ({ options, handler,  mapper, append }: FetchDataProduct) => {
     try {
         const {url, headers}:{url: URL , headers:AxiosHeaders} = await handler(options)
-          
            const result =  await sendToBackground({
             name: "shopee-request",
             body:{
@@ -21,12 +20,14 @@ export const fetchDataProducts = async ({ options, handler,  mapper, append }: F
             extensionId
             
         } )
-        console.log('result form background', result)
+        if(result.data){
         return result.data
+        }
+        throw new Error('data not found')
     }
     catch (error) {
         console.log(error)
-        return error
+        throw error
     }
 
 }
